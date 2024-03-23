@@ -26,8 +26,16 @@ def calculate_demographic_data(print_data=True):
     lower_education = total_education - higher_education
 
     # percentage with salary >50K
-    higher_education_rich = None
-    lower_education_rich = None
+    # create dataframe with people of higher education
+    higher_df = df[df['education'].isin(['Bachelors', 'Masters', 'Doctorate'])]
+    #find no of people in higher education earning >50K
+    higher_education_high_salary_count = (higher_df['salary'] == '>50K').sum()
+    #percentage of higher_education earning above 50K
+    higher_education_rich = (higher_education_high_salary_count / higher_education) * 100
+    #total number of population earning >50K
+    pop_rich = (df['salary'] == '>50K').sum()
+    total_lower_rich = pop_rich - higher_education_high_salary_count
+    lower_education_rich = (total_lower_rich / lower_education) * 100
 
     # What is the minimum number of hours a person works per week (hours-per-week feature)?
     min_work_hours = None
