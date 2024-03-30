@@ -22,6 +22,7 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
     html.Div(children='Demographic data visualization', style={'textAlign':'center'}),
     html.Hr(),
+    dcc.Dropdown(id='dropdown', options=[{'label': i, 'value': i} for i in ['native-country', 'sex']], value='native-country', multi=False),
     dcc.RadioItems(options=['salary', 'age', 'hours-per-week'], value='salary', id='buttons'),
     dcc.Graph(figure={}, id='graphs')
 ])
@@ -29,13 +30,18 @@ app.layout = html.Div([
 #implement interactivity
 @callback(
     Output(component_id='graphs', component_property='figure'),
-    Input(component_id='buttons', component_property='value')
+    Input(component_id='buttons', component_property='value'),
+    Input(component_id='dropdown', component_property='value')
 )
 
-def my_graph(pick):
-    fig = px.histogram(inf, x='native-country', y=pick, histfunc='avg')
-    return fig
-
+def my_graph(pick, selected_dropdown):
+    if selected_dropdown == 'native-country':
+        fig = px.histogram(inf, x='native-country', y=pick, histfunc='avg')
+    else:
+        fig = px.histogram(inf, x='sex', y=pick, histfunc='avg')
+    
+    return fig   
+ 
 #Run the app
 if __name__ == '__main__':
     app.run(debug=True)
