@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 import dash
-from dash import dcc, html 
-import plotly.graph_objs as go
+from dash import dcc, html, callback 
 from dash.dependencies import Input, Output
 import plotly.express as px
 
@@ -17,8 +16,29 @@ random_salaries_above_50k = np.random.randint(50001, 80001, size=len(inf))
 inf['salary'] = np.where(inf['salary'] == '<=50K', random_salaries_below_50k, random_salaries_above_50k)
 
 # Initialize the Dash app
-app = Dash(__name__)
+app = dash.Dash(__name__)
 
+#App layout
+app.layout = html.Div([
+    html.Div(children='Demographic data visualization', style={'textAlign':'center'}),
+    html.Hr(),
+    dcc.RadioItems(options=['salary', 'age', 'hours-per-week'], value='salary', id='buttons'),
+    dcc.Graph(figure={}, id='graphs')
+])
+
+#implement interactivity
+@callback(
+    Output(component_id='graphs', component_property='figure'),
+    Input(component_id='buttons', component_property='value')
+)
+
+def my_graph(pick):
+    fig = px.histogram(inf, x='native-country', y=pick, histfunc='avg')
+    return fig
+
+#Run the app
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 print(inf.head())
